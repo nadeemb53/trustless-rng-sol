@@ -12,17 +12,17 @@ contract Simulation is Test {
     address add1 = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
     address add2 = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
 
-    // 64-bit
-    uint256 p = 15524864159439314293;
-    // 16-bit
-    uint256 q = 50753;
+    // 24-bit prime
+    uint256 p = 15624253;
+    // 24-bit prime
+    uint256 q = 16648823;
 
     function setUp() public {
         dkg = new DKG(p, q);
         elGamal = new ElGamal(p, q);
     }
 
-    function testCorrectPublicValues() public {
+    function testDKGFlow() public {
         uint256[] memory polynomial1 = dkg.generateRandomPolynomial(add1);
         dkg.computePublicValues(polynomial1, add1);
 
@@ -32,7 +32,7 @@ contract Simulation is Test {
         dkg.playerAddresses(0);
         dkg.playerAddresses(1);
 
-        // dkg.verifyPublicValues(polynomial2, add1);
+        dkg.verifyPublicValues(polynomial2, add1);
 
         dkg.generateSharedPublicKey();
 

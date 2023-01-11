@@ -18,7 +18,7 @@ contract ElGamal {
 
     function generateSeed() public view returns (uint256) {
         return
-            uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender))); // TODO: make this more random
+            uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender)));
     }
 
     function verifySeed() public view returns (bool) {

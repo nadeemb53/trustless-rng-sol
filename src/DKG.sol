@@ -45,9 +45,11 @@ contract DKG {
         polynomial[0] = si;
 
         // Generate random coefficients for the remaining k terms of the polynomial
-        for (uint256 i = 1; i < k; i++) {
+        for (uint256 i = 1; i <= k; i++) {
             polynomial[i] =
-                uint256(keccak256(abi.encodePacked(block.timestamp, i))) %
+                uint256(
+                    keccak256(abi.encodePacked(block.timestamp, myAddress, i))
+                ) %
                 (10);
         }
 
@@ -83,14 +85,16 @@ contract DKG {
         // Get the number of players
         uint256 k = playerCount;
 
-        // Initialize an array to store the computed public values
-        uint256[] memory computedPublicValues = new uint256[](k);
-
         // Verify the public values for the player
         for (uint256 i = 0; i < playerAddresses.length; i++) {
+            // Skip checking the public values for the current player
             if (playerAddresses[i] == myAddress) {
                 continue;
             }
+
+            // Initialize an array to store the computed public values
+            uint256[] memory computedPublicValues = new uint256[](k);
+
             // Get the public values for player i
             uint256[] memory publicValues = playerPublicValues[
                 playerAddresses[i]
@@ -98,8 +102,9 @@ contract DKG {
 
             // Compute the public values for player i's polynomial
             for (uint256 j = 0; j < k; j++) {
-                computedPublicValues[j] = (publicValues[j]**polynomial[i]) % p;
+                computedPublicValues[j] = (g**polynomial[j]) % p;
             }
+
             // Check if the computed public values match the received public values
             if (
                 keccak256(abi.encodePacked(computedPublicValues)) !=
