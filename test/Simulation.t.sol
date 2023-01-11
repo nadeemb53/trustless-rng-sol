@@ -29,10 +29,8 @@ contract Simulation is Test {
         uint256[] memory polynomial2 = dkg.generateRandomPolynomial(add2);
         dkg.computePublicValues(polynomial2, add2);
 
-        dkg.playerAddresses(0);
-        dkg.playerAddresses(1);
-
-        dkg.verifyPublicValues(polynomial2, add1);
+        assert(dkg.verifyPublicValues(polynomial2, add1) == true);
+        assert(dkg.verifyPublicValues(polynomial1, add2) == true);
 
         dkg.generateSharedPublicKey();
 

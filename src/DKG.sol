@@ -81,7 +81,7 @@ contract DKG {
     function verifyPublicValues(
         uint256[] calldata polynomial,
         address myAddress
-    ) public {
+    ) public returns (bool) {
         // Get the number of players
         uint256 k = playerCount;
 
@@ -114,6 +114,7 @@ contract DKG {
                 emit CheatDetected(playerAddresses[i]);
             }
         }
+        return true;
     }
 
     function generateSharedPublicKey() public {
