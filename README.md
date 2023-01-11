@@ -7,3 +7,10 @@ This repository contains the Solidity contracts for a decentralized protocol for
 - DKG.sol: Contains the contract for the Distributed Key Generation (DKG) process
 
 - ElGamal.sol: Contains the contract for the ElGamal encryption process
+
+### Run Test Simulation
+
+```shell
+forge install
+forge test
+```

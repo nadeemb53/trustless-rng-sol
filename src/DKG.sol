@@ -11,7 +11,7 @@ contract DKG {
     // Event emitted when a player is detected as malicious
     event CheatDetected(address);
     // Shared public key for the players
-    uint256 contractPublicKey;
+    uint256 public contractPublicKey;
     // The large prime number p
     uint256 private p;
     // The generator g
@@ -26,43 +26,40 @@ contract DKG {
         g = _g;
     }
 
-    function generateRandomPolynomial()
+    function generateRandomPolynomial(address myAddress)
         public
-        returns (uint256, uint256[] memory)
+        returns (uint256[] memory)
     {
-        // Get the address of the caller (i.e. the player)
-        address player = msg.sender;
-
         // Get the number of players
         uint256 k = playerCount;
 
         // Generate a random secret value si
         uint256 si = uint256(
-            keccak256(abi.encodePacked(block.timestamp, player))
-        );
+            keccak256(abi.encodePacked(block.timestamp, myAddress))
+        ) % (10);
 
         // Initialize an empty polynomial for the player
-        uint256[] memory polynomial = new uint256[](k);
+        uint256[] memory polynomial = new uint256[](k + 1);
 
         // Set the first coefficient of the polynomial to si
-        // polynomial[0] = si;
+        polynomial[0] = si;
 
         // Generate random coefficients for the remaining k terms of the polynomial
-        for (uint256 i = 0; i < k; i++) {
+        for (uint256 i = 1; i < k; i++) {
             polynomial[i] =
                 uint256(keccak256(abi.encodePacked(block.timestamp, i))) %
                 (10);
         }
 
-        playerAddresses.push(msg.sender);
+        playerAddresses.push(myAddress);
 
-        return (si, polynomial);
+        return polynomial;
     }
 
-    function computePublicValues(uint256[] calldata polynomial) public {
-        // Get the address of the caller (i.e. the player)
-        address player = msg.sender;
-
+    function computePublicValues(
+        uint256[] calldata polynomial,
+        address myAddress
+    ) public returns (uint256[] memory) {
         // Get the number of players
         uint256 k = playerCount;
 
@@ -71,17 +68,18 @@ contract DKG {
 
         // Compute the public values
         for (uint256 j = 0; j < k; j++) {
-            publicValues[j] = (g**polynomial[j]);
+            publicValues[j] = (g**polynomial[j]) % p;
         }
 
         // Store the public values for the player
-        playerPublicValues[player] = publicValues;
+        playerPublicValues[myAddress] = publicValues;
+        return publicValues;
     }
 
-    function verifyPublicValues(uint256[] calldata polynomial) public {
-        // Get the address of the caller (i.e. the player)
-        address player = msg.sender;
-
+    function verifyPublicValues(
+        uint256[] calldata polynomial,
+        address myAddress
+    ) public {
         // Get the number of players
         uint256 k = playerCount;
 
@@ -90,8 +88,7 @@ contract DKG {
 
         // Verify the public values for the player
         for (uint256 i = 0; i < playerAddresses.length; i++) {
-            if (playerAddresses[i] == player) {
-                // TODO: doesnt make sense
+            if (playerAddresses[i] == myAddress) {
                 continue;
             }
             // Get the public values for player i
