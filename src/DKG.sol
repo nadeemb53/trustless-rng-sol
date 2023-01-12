@@ -12,6 +12,7 @@ contract DKG {
     event CheatDetected(address);
     // Shared public key for the players
     uint256 public contractPublicKey;
+    bool isSharedPublicKeyGenerated = false;
     // The large prime number p
     uint256 private p;
     // The generator g
@@ -118,6 +119,10 @@ contract DKG {
     }
 
     function generateSharedPublicKey() public {
+        require(
+            !isSharedPublicKeyGenerated,
+            "shared public key can only be generated once"
+        );
         // Get the number of players
         uint256 k = playerCount;
 
@@ -138,5 +143,6 @@ contract DKG {
         }
         // Store the shared public key
         contractPublicKey = sharedPublicKey;
+        isSharedPublicKeyGenerated = true;
     }
 }

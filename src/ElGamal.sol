@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
+import "./utils/ECDSA.sol";
+
 contract ElGamal {
     // The large prime number p
     uint256 private p;
     // The generator g
     uint256 private g;
+    using ECDSA for bytes32;
 
     //constructor of the contract
     constructor(uint256 _p, uint256 _g) {
@@ -16,13 +19,33 @@ contract ElGamal {
         g = _g;
     }
 
-    function generateSeed() public view returns (uint256) {
-        return
-            uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender)));
+    function generateSeed() public view returns (uint256 seed) {
+        uint256 rand1 = uint256(
+            keccak256(abi.encodePacked(block.timestamp, msg.sender))
+        );
+        uint256 rand2 = uint256(
+            keccak256(abi.encodePacked(block.timestamp, msg.sender, rand1))
+        );
+        seed = (rand1 + rand2) % (p - 1);
     }
 
-    function verifySeed() public view returns (bool) {
-        // TODO: ecrecover precompile - check if the seed is correct
+    function generateRandomNumberWithSeed(uint256 seed)
+        public
+        view
+        returns (uint256)
+    {
+        return
+            uint256(
+                keccak256(abi.encodePacked(block.timestamp, msg.sender, seed))
+            ) % (10);
+    }
+
+    function verifySeed(
+        bytes32 seedHash,
+        bytes calldata signature,
+        address user
+    ) public pure returns (bool) {
+        return user == ECDSA.recover(seedHash, signature);
     }
 
     function encrypt(
@@ -31,14 +54,14 @@ contract ElGamal {
         uint256 randomNumber
     ) public view returns (uint256[] memory) {
         // Compute the ciphertext
-        uint256[] memory ciphertext;
+        uint256[] memory ciphertext = new uint256[](2);
         ciphertext[0] = (g**randomNumber) % p;
         ciphertext[1] = (message * (publicKey**randomNumber)) % p;
 
         return ciphertext;
     }
 
-    function addEncryptedNumbers(uint256[] memory numbers)
+    function addEncryptedNumbers(uint256[][] memory numbers)
         public
         view
         returns (uint256[] memory)
@@ -50,8 +73,8 @@ contract ElGamal {
 
         // Add all the encrypted numbers to the sum
         for (uint256 i = 0; i < numbers.length; i += 2) {
-            sum[0] = (sum[0] * numbers[i]) % p;
-            sum[1] = (sum[1] + numbers[i + 1]) % p;
+            sum[0] = (sum[0] * numbers[i][0]) % p;
+            sum[1] = (sum[1] + numbers[i + 1][1]) % p;
         }
 
         return sum;
