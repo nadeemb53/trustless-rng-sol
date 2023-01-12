@@ -12,5 +12,22 @@ This repository contains the Solidity contracts for a decentralized protocol for
 
 ```shell
 forge install
-forge test
+forge test -vvvvv
 ```
+
+### Deploy your own set of contracts
+
+```shell
+npx thirdweb
+npx thirdweb build
+npx thirdweb deploy
+```
+
+### Deployed contracts on Polygon Testnet (Mumbai)
+
+- [DKG.sol](https://thirdweb.com/mumbai/0xd318d9F46e074C4F13888D8009Da91756bb07990/)
+- [ElGamal.sol](https://thirdweb.com/mumbai/0x717f7DcAd978d873B386933DcCf8cd4F6fCbBE57/)
+
+### Simulation Results
+
+![Simulation results](./src/image/simulation.png)
