@@ -1,6 +1,6 @@
 ## Trustless Random Number Generation
 
-This repository contains the Solidity contracts for a decentralized protocol for generating verifiably random numbers. The protocol is based on the research paper [Dynamic User Entropy](https://www.ontropy.io/math_whitepaper.pdf) and is intended for use in multiplayer games that require a fair and secure method of generating random numbers.
+This repository contains the Solidity contracts for a decentralized protocol for generating verifiably random numbers. The protocol is based on the research paper [Dynamic User Entropy](https://www.ontropy.io/Math_whitepaper.pdf) and is intended for use in multiplayer games that require a fair and secure method of generating random numbers.
 
 ### Contracts
 
